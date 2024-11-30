@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="SegLLM: Multi-round Reasoning Segmentation">
+  <meta name="keywords" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SAIL</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <meta name="color-scheme" content="light only">
+
+  <style>
+    :root {
+      color-scheme: light only;
+    }
+    
+    /* 确保所有文本使用深色 */
+    body {
+      background-color: #ffffff !important;
+      color: #333333 !important;
+    }
+    
+    /* 防止媒体查询影响 */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: light only;
+      }
+    }
+    
+    .title {
+      color: #363636 !important;
+    }
+
+    .data-table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 1em 0;
+    }
+
+    .data-table th, .data-table td {
+        padding: 8px;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+
+    .tb-hdr {
+        background-color: #f5f5f5;
+        font-weight: bold;
+    }
+
+    .section-border {
+        border-right: 2px solid #ddd;
+    }
+
+    .highlight {
+        font-weight: bold;
+        color: #2196F3;
+    }
+
+    .section-group-1 { background-color: #f0f0f0; }
+    .section-group-2 { background-color: #ffe4cc; }
+    .section-group-3 { background-color: #fffbe6; }
+    .section-group-4 { background-color: #e6ffe6; }
+
+    .section-group-2-text { color: #d35400; }
+    .section-group-3-text { color: #f39c12; }
+    .section-group-4-text { color: #27ae60; }
+
+    /* 添加全局字体设置 */
+    * {
+      font-family: 'Google Sans', 'Noto Sans', 'Castoro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* 可以为特定元素设置不同的字体 */
+    .title {
+      font-family: 'Google Sans', 'Noto Sans', sans-serif;
+    }
+
+    /* 正文文本字体 */
+    p, li {
+      font-family: 'Noto Sans', 'Google Sans', sans-serif;
+    }
+
+    .tabs ul {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      border-bottom: none !important;
+    }
+
+    .tabs li a {
+      position: relative;
+      color: #666;
+      border: none !important;
+      border-bottom: none !important;
+      border-radius: 8px;
+    }
+
+    .tabs li.is-active a {
+      background: linear-gradient(145deg, #ffffff, #f0f0f0);
+      box-shadow: 4px 4px 8px #d1d1d1,
+                  -4px -4px 8px #ffffff;
+      transform: translateY(-1px);
+      border: none !important;
+      border-bottom: none !important;
+    }
+
+    .tabs li a:hover {
+      transform: translateY(-2px);
+      box-shadow: 6px 6px 12px #d1d1d1,
+                  -6px -6px 12px #ffffff;
+    }
+
+    .tabs li:not(.is-active) a:active {
+      box-shadow: inset 4px 4px 8px #d1d1d1,
+                  inset -4px -4px 8px #ffffff;
+      transform: translateY(0);
+    }
+
+    /* Content box styles */
+    .anchor-content {
+      transition: all 0.3s ease;
+      opacity: 0;
+      height: 0;
+      overflow: hidden;
+    }
+
+    .anchor-content.is-active {
+      opacity: 1;
+      height: auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      padding: 2rem;
+      margin: 1rem 0;
+      border: 1px solid #eee;
+    }
+
+    /* Enhance content layout */
+    .anchor-content .columns {
+      margin-bottom: 2rem;
+    }
+
+    .anchor-content img {
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+
+    .anchor-content .box {
+      border-radius: 8px;
+      margin-top: 2rem;
+    }
+
+    /* Add subtle hover effects to images */
+    .anchor-content img:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+    }
+
+    /* Add these styles to your existing CSS */
+    .tabs li a:hover {
+      transform: translateY(-2px);
+      box-shadow: 6px 6px 12px #d1d1d1,
+                  -6px -6px 12px #ffffff;
+    }
+
+    .tabs li.is-active a {
+      background: linear-gradient(145deg, #ffffff, #f0f0f0);
+      box-shadow: 4px 4px 8px #d1d1d1,
+                  -4px -4px 8px #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .tabs li:not(.is-active) a:active {
+      box-shadow: inset 4px 4px 8px #d1d1d1,
+                  inset -4px -4px 8px #ffffff;
+      transform: translateY(0);
+    }
+
+    /* 添加到现有的样式中 */
+    .tabs li a.tab-button {
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .tabs li.is-active a.tab-button {
+      background: linear-gradient(145deg, #ffffff, #f0f0f0);
+      box-shadow: 4px 4px 8px #d1d1d1,
+                  -4px -4px 8px #ffffff;
+    }
+  </style>
+
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+  </script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']],
+        processEscapes: true
+      }
+    });
+  </script>
+</head>
+
+<body>
+
+  <section class="hero" style="background-image: url('static/images/bg.png'); 
+                              background-size: cover;
+                              background-repeat: no-repeat;
+                              background-position: center;
+                              position: relative;
+                              padding: 0;">
+    <div style="position: absolute; 
+                top: 0; 
+                left: 0; 
+                right: 0;
+                bottom: 0;
+                width: 100%; 
+                height: 100%; 
+                background-color: rgba(0, 0, 0, 0.05);
+                z-index: 1;"></div>
+    
+    <div class="hero-body" style="position: relative; z-index: 2;">
+      <div class="container is-fluid">
+        <div class="columns is-gapless" style="margin-top: -2rem;">
+          <!-- Left Column - Title and Authors -->
+          <div class="column is-two-fifths" style="padding: 4rem;">
+            <div style="position: sticky; top: 2rem;">
+              <h1 class="title is-1" style="font-size: 3.5rem; line-height: 1.2; margin-bottom: 2rem;">
+                <span style="color: white; font-weight: 600; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Assessing and Learning Alignment of Unimodal Vision and Language Models</span>
+              </h1>
+              <div class="authors" style="margin: 2rem 0;">
+                <div style="margin-bottom: 1.5rem;">
+                  <a href="https://lezhang7.github.io/" class="author-link" style="color: #fff; font-size: 1.4rem; font-weight: bold; text-decoration: none; transition: color 0.3s; text-shadow: 2px 2px 4px rgba(0,0,0,0.6);">
+                    Le Zhang
+                  </a>
+                  <span style="margin: 0 0.5rem; color: white;">•</span>
+                  <a href="https://mylittlechange.github.io/" class="author-link" style="color: #fff; font-size: 1.4rem; font-weight: bold; text-decoration: none; transition: color 0.3s; text-shadow: 2px 2px 4px rgba(0,0,0,0.6);">
+                    Qian Yang
+                  </a>
+                  <span style="margin: 0 0.5rem; color: white;">•</span>
+                  <a href="https://www.iro.umontreal.ca/~agrawal/" class="author-link" style="color: #fff; font-size: 1.4rem; font-weight: bold; text-decoration: none; transition: color 0.3s; text-shadow: 2px 2px 4px rgba(0,0,0,0.6);">
+                    Aishwarya Agrawal
+                  </a>
+                </div>
+                
+                <div style="color: #fff; font-size: 1.2rem; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.6);">
+                  <div>Mila - Quebec AI Institute</div>
+                  <div>Université de Montréal</div>
+                </div>
+              </div>
+
+              <div class="buttons" style="margin-top: 3rem;">
+                <a href="" class="button is-medium" style="background: #E67E22; color: white; border: none; margin-right: 1rem; transition: transform 0.2s; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+                <a href="https://github.com/lezhang7/SAIL" class="button is-medium" style="background: #2C3E50; color: white; border: none; transition: transform 0.2s; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+    <!-- Right Column - Motivation and Contributions -->
+    <div class="column" style="padding: 4rem; margin-top: 2rem;">
+      <div style="color: white; background-color: rgba(1, 0, 0, 0.65); padding: 2rem; border-radius: 10px; backdrop-filter: blur(20px); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); -webkit-backdrop-filter: blur(20px);">
+        <h2 style="color: #FFA726; font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">Assessing Alignment</h2>
+        <div style="font-size: 1.1rem; line-height: 1.8;">
+          <p style="margin-bottom: 1.5rem;">
+            <strong style="color: #FFE082; font-style: italic;">How well are unimodal vision and language models aligned?</strong> <i>This question is critical for advancing multimodal AI.  Although prior work has approached this problem, their methodologies often do not translate effectively to practical applications. To address this, we propose a</i> <strong style="color: #ffffff; font-style: italic; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">direct assessment method</strong>, <i>inspired by linear probing, for evaluating vision-language alignment.</i>
+          </p>
+        </div>
+    
+        <h2 style="color: #FFA726; font-size: 2rem; font-weight: 700; margin: 1rem 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">Learning Alignment</h2>
+        <div style="font-size: 1.1rem; line-height: 1.8; text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">
+          <p style="margin-bottom: 1.5rem;">
+            <strong style="color: #FFE082; font-style: italic;">How to efficiently learn alignment between unimodal models?</strong> <i>We introduce</i> 
+            <strong style="color: #4FC3F7; font-style: italic;"> Swift Alignment of Image and Language (SAIL)</strong>, <i>an efficient transfer learning framework that aligns pretrained unimodal vision and language models for downstream tasks.</i>
+          </p>
+          <p style="margin-bottom: 1.5rem;">
+            <i>By leveraging only ~6% of the paired image-text data required by CLIP,</i> <strong style="color: #4FC3F7; font-style: italic;">SAIL</strong> <i>achieves multimodal alignment using a single A100 GPU with just ~5 hours of training. 
+            It supports batch sizes up to 32,768 and delivers outstanding performance, including 73.4% zero-shot accuracy on ImageNet (surpassing CLIP's 72.7%) while excelling in zero-shot retrieval, complex reasoning, and semantic segmentation. It also enahnces SSL vision encoders such as DINOv2 when integrated in multimodal large language models.</i>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    </section>
+
+  <section class="hero is-light is-small">
+    <div class="hero-body has-text-centered">
+      <h1 class="title is-1 mmmu">
+      
+        <span class="mmmu">Part 1: Assessing Alignment between Unimodal Models</span>
+      </h1>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column">
+          <h2 class="title is-3" style="color: #2C3E50;">Overview</h2>
+          <div class="column is-centered">
+            <div class="box content has-text-justified" style="background-color: #ffffff; padding: 1.5em; border-left: 5px solid #2C3E50; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+              <h4 class="title is-4" style="color: #2C3E50;">Key Questions</h4>
+              <ul style="margin-top: 1em;">
+                <li><strong style="color: #2C3E50;">Alignment Capability:</strong> <span style="color: #2C3E50;">How well can unimodal visual and language models align for zero-shot open-vocabulary tasks?</span></li>
+                <li><strong style="color: #2C3E50;">Model Architecture Impact:</strong> <span style="color: #2C3E50;">Do larger models trained on extensive datasets yield better alignment, or does the choice of self-supervised learning (SSL) methods play a more significant role?</span></li>
+                <li><strong style="color: #2C3E50;">Representation Properties:</strong> <span style="color: #2C3E50;">What properties of SSL representations—such as linear separability or clustering quality—drive stronger cross-modal alignment?</span></li>
+              </ul>
+              <hr style="border-top: 1px solid #2C3E50; margin: 1em 0;">
+              <p style="font-size: 1em; line-height: 1.6; color: #2C3E50;">
+                We propose <strong style="color: #2C3E50;">Visual-Language Alignment Probing</strong>, a direct assessment method inspired by linear probing in SSL evaluation. This approach freezes pretrained vision and language backbones and trains a lightweight linear alignment layer on image-text datasets.     
+              </p>
+            </div>
+            </div>
+            <figure class="image" style="margin-top: 2rem; width: 50%; margin-left: auto; margin-right: auto;">
+              <img src="static/images/overview.png" 
+                   alt="Overview Illustration" 
+                   style="border: 2px solid #2C3E50; border-radius: 8px; padding: 0.5em; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+              <figcaption style="text-align: center; font-size: 0.9em; color: #2C3E50; margin-top: 0.5em;">
+                <em>Figure: Illustration of Visual-Language Alignment Probing</em>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="section">
+    <div class="container is-max-desktop">
+
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3"> Results and Findings</h2>
+       
+          <div class="content has-text-justified">
+            <p style="color: #333333;">
+              We use the open-source <a href="https://huggingface.co/datasets/qidouxiong619/dreamlip_long_captions" target="_blank">DreamLIP CC3M dataset <img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" style="height: 1em; vertical-align: middle;"></a> (2.2M paired image-text samples) to train the alignment layer, leveraging its diversity and quality as an effective probing dataset. To measure the alignment quality, we test on COCO in zero-shot retrieval setup, using the R@10 metric. We report average recall of text-to-image and image-to-text retrieval tasks. For systematic evaluation, we fix an anchor model in one modality and vary models in the other modality to identify which models best align with the anchor.
+            </p>
+            <div class="content has-text-justified">
+              <!-- Enhanced selector buttons with neumorphic design -->
+              <div class="tabs is-centered" style="margin-bottom: 2rem;">
+                <ul style="border-bottom: none; 
+                           padding: 0.5rem 2rem; 
+                           background: transparent;
+                           border-radius: 16px;">
+                  <li class="is-active" data-target="language-anchor">
+                    <a class="tab-button" style="margin: 0 1rem;
+                              padding: 1rem 2rem;
+                              border-radius: 12px;
+                              transition: all 0.3s ease;">
+                      <span class="icon is-medium" style="margin-right: 0.5rem;">
+                        <i class="fas fa-language fa-lg"></i>
+                      </span>
+                      <span style="font-weight: 600; font-size: 1.1rem;">Language as Anchor</span>
+                    </a>
+                  </li>
+                  <li data-target="vision-anchor">
+                    <a class="tab-button" style="margin: 0 1rem;
+                              padding: 1rem 2rem;
+                              border-radius: 12px;
+                              transition: all 0.3s ease;">
+                      <span class="icon is-medium" style="margin-right: 0.5rem;">
+                        <i class="fas fa-eye fa-lg"></i>
+                      </span>
+                      <span style="font-weight: 600; font-size: 1.1rem;">Vision as Anchor</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Language as Anchor content -->
+              <div id="language-anchor" class="anchor-content" style="display: none;">
+                <p style="color: #333333;">
+                  For the language anchor, we select GTE-en-large-v1.5, and broadly evaluate various self-supervised vision models.
+                </p>
+                
+                <div class="columns is-centered">
+                  <div class="column">
+                    <img src="static/images/visionalign.png" style="width:100%">
+                  </div>
+                  <div class="column">
+                    <img src="static/images/visionalign_linearprobe.png" style="width:100%">
+                  </div>
+                </div>
+                
+                <em>Figure: Linear alignment probing results trained with 2.2M paired data from CC3M. The radius represents the relative number of parameters in each model. The Y-axis indicates the zero-shot MSCOCO retrieval average R@10 performance.</em>
+                
+                <div class="box" style="background-color: #f9f9f9; padding: 1.5em; margin-top: 2em; border-left: 5px solid #3273dc;">
+                  <h4 class="title is-5" style="color: #3273dc;">Key Findings</h4>
+                  <ul style="margin-top: 1em; color: #333333;">
+                    <li><strong style="color: #333333;">Model Size Impact:</strong> Larger models always lead to better alignment.</li>
+                    <li><strong style="color: #333333;">SSL Method Matters:</strong> DINOv2 demonstrates superior alignment with language anchors, outperforming larger models like AIM-L (1B parameters) despite its smaller size (86M parameters), while DINO-ResNet matches DINO-B's performance with fewer parameters, highlighting ResNet's efficiency. In contrast, MAE-series models underperform, likely due to their pixel-level reconstruction focus, which emphasizes low-level details over the high-level semantics essential for image-text alignment.</li>
+                    <li><strong style="color: #333333;">Representation Properties:</strong> Alignment performance strongly depends on the clustering quality of SSL representation, as reflected by k-NN performance more than linear separability.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Vision as Anchor content -->
+              <div id="vision-anchor" class="anchor-content" style="display: none;">
+                <p style="color: #333333;">
+                  For the vision anchor, we select DINOv2-L, and broadly evaluate various language models.
+                </p>
+                
+                <div class="columns is-centered">
+                  <div class="column">
+                    <img src="static/images/languagealign.png" style="width:100%">
+                  </div>
+                  <div class="column">
+                    <img src="static/images/winoground.png" style="width:100%">
+                  </div>
+                </div>
+                
+                <em>Figure: Linear alignment probing results trained with 2.2M paired data from CC3M. The radius represents the relative number of parameters in each model. The Y-axis indicates the zero-shot MSCOCO retrieval average R@10 performance.</em>
+                
+                <div class="box" style="background-color: #f9f9f9; padding: 1.5em; margin-top: 2em; border-left: 5px solid #3273dc;">
+                  <h4 class="title is-5" style="color: #3273dc;">Key Findings</h4>
+                  <ul style="margin-top: 1em; color: #333333;">
+                    <li><strong style="color: #333333;">Model Size Impact:</strong> Larger language models (as measured by MTEB benchmark) consistently achieve better alignment with the vision anchor, highlighting the importance of model scale.</li>
+                    <li><strong style="color: #333333;">Language Understanding Critical:</strong> Strong language understanding capabilities are essential for complex vision-language reasoning tasks.</li>
+                    <li><strong style="color: #333333;">CLIP Training Limitations:</strong> Training text encoders solely through CLIP-style contrastive learning proves insufficient for optimal performance.</li>
+                    <li><strong style="color: #333333;">Pretrained LM Advantage:</strong> Leveraging pretrained language models as text encoders emerges as a promising strategy for building robust vision-language models, as they bring rich linguistic knowledge.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero is-light is-small">
+      <div class="hero-body has-text-centered">
+        <h1 class="title is-1 mmmu">
+        
+          <span class="mmmu">Part 2: Learning Alignment between Unimodal Models</span>
+        </h1>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column">
+            <h2 class="title is-3">Swift Alignment of Image and Language Framework</h2>
+            <div class="column is-centered">
+              <div class="content">
+                <p style="color: #333333;">
+                  We introduce <strong style="color: #4FC3F7">Swift Alignment of Image and Language (SAIL)</strong>, a streamlined framework for aligning pretrained vision and language models. Our efficient two-step training pipeline optimizes both performance and computational costs. Specifically, SAIL achieves superior alignment through three key optimizations:
+                </p>
+                <div class="columns is-centered">
+                  <div class="column has-text-centered">
+                    <img src="static/images/pipeline.png" style="width:60%; margin: 0 auto;">
+                  </div>
+                </div>
+
+                <strong style="color: #4FC3F7">SAIL</strong> achieves superior alignment through three key optimizations:
+                <div class="columns is-multiline" style="margin-top: 1em;">
+                  <!-- Architecture Module -->
+                  <div class="column is-one-third">
+                    <div class="box" style="height: 100%; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #eee;">
+                      <div style="text-align: center; margin-bottom: 1rem;">
+                        <span class="icon is-large">
+                          <i class="fas fa-layer-group fa-2x" style="color: #4FC3F7;"></i>
+                        </span>
+                      </div>
+                      <h4 class="title is-5 has-text-centered">Alignment Layer Arch</h4>
+                      <p class="has-text-centered">Advanced non-linear GLU in alignment layers to improve alignment quality</p>
+                    </div>
+                  </div>
+
+                  <!-- Loss Function Module -->
+                  <div class="column is-one-third">
+                    <div class="box" style="height: 100%; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #eee;">
+                      <div style="text-align: center; margin-bottom: 1rem;">
+                        <span class="icon is-large">
+                          <i class="fas fa-chart-line fa-2x" style="color: #4FC3F7;"></i>
+                        </span>
+                      </div>
+                      <h4 class="title is-5 has-text-centered">Enhanced Loss Function</h4>
+                      <p class="has-text-centered">Sigmoid binary classification loss with balanced positive/negative contributions</p>
+                    </div>
+                  </div>
+
+                  <!-- Data Selection Module -->
+                  <div class="column is-one-third">
+                    <div class="box" style="height: 100%; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #eee;">
+                      <div style="text-align: center; margin-bottom: 1rem;">
+                        <span class="icon is-large">
+                          <i class="fas fa-database fa-2x" style="color: #4FC3F7;"></i>
+                        </span>
+                      </div>
+                      <h4 class="title is-5 has-text-centered">High-Quality Data Selection</h4>
+                      <p class="has-text-centered">MLLM generated captions as additional positives and multiple positive captions contrast loss</p>
+                    </div>
+                  </div>
+                </div>
+                <!-- <p style="margin-top: 1em;">
+                For our experiments, we select DINOv2-L and GTE-en-large-v1.5 as our vision and language backbones respectively, chosen for their optimal balance of model size and alignment capabilities. We conduct comprehensive ablation studies using CC3M dataset for training, with evaluations on ImageNet-1k and COCO benchmarks to validate our design choices.
+                </p> -->
+
+              
+                
+                <div id="tab:sail_ablation" style="display: flex; flex-direction: column; align-items: center;">
+                  <div class="table-container">
+                    <table class="data-table">
+                      <thead>
+                        <tr>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">Ablation</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">0</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">1</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">2</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">3</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">4</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">5</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">6</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">7</th>
+                        </tr>
+                        <tr>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">Tasks</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">Baseline</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">+ MLP × 4</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">+ GLU × 4</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">+ GLU × 8</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">+ Sigmoid</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">+ |B| → |B|²</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">+ Long-HQ</th>
+                          <th style="color: #1a1a1a; background-color: #f5f5f5;">+ Multi-Pos</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="section-border">IN-1K 0-shot</td>
+                          <td>33.2</td>
+                          <td>36.8</td>
+                          <td>39.6</td>
+                          <td>45.4</td>
+                          <td>50.7</td>
+                          <td>51.8</td>
+                          <td>48.4</td>
+                          <td class="highlight">54.0</td>
+                        </tr>
+                        <tr>
+                          <td class="section-border">T2I R@1</td>
+                          <td>11.1</td>
+                          <td>8.0</td>
+                          <td>11.5</td>
+                          <td>16.1</td>
+                          <td>25.4</td>
+                          <td>26.2</td>
+                          <td>31.4</td>
+                          <td class="highlight">32.9</td>
+                        </tr>
+                        <tr>
+                          <td class="section-border">I2T R@1</td>
+                          <td>13.5</td>
+                          <td>10.7</td>
+                          <td>17.4</td>
+                          <td>22.5</td>
+                          <td>36.0</td>
+                          <td>36.7</td>
+                          <td>44.2</td>
+                          <td class="highlight">45.4</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p style="font-style: italic; color: #666; margin-top: -1em;">
+                    Table: Ablation results using CC3M on different methods. 
+                    Baseline refers to aligning unimodal models with only a linear layer using infoNCE loss.
+                  </p>  
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column">
+            <h2 class="title is-3">Evaluating SAIL on Downstream Tasks.</h2>
+          </div>
+        </div>
+        <p style="color: #333333; margin-bottom: 1.5em;">
+          We train <strong style="color: #4FC3F7">SAIL</strong> using state-of-the-art <a href="https://github.com/facebookresearch/dinov2" target="_blank">DINOv2-L</a> as the vision model, paired with two language models: compact <a href="https://huggingface.co/Alibaba-NLP/gte-large-en-v1.5" target="_blank">GTE-en-large-v1.5</a> (SAIL-L-GTE) and powerful <a href="https://huggingface.co/nvidia/NV-Embed-v2" target="_blank">NV-Embed-2</a> (SAIL-L-NV2) on a <a href="https://huggingface.co/datasets/qidouxiong619/dreamlip_long_captions" target="_blank"> 23M Merged dataset <img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" style="height: 1em; vertical-align: middle;"></a>  with ShareGPT4-generated captions as additional positive captions. The training of SAIL takes ~ 5 hours on a single A100 GPU with batch size up to 32,768.
+        </p>
+        
+        <p style="color: #333333; margin-bottom: 1.5em;">
+            SAIL excels in various zero-shot cross-modal tasks, including image recognition, cross-modal retrieval, open-vocabulary segmentation, and MLLM tasks. 
+        </p>
+      </div>
+
+
+      
+      <div class="content has-text-justified">
+        <!-- Enhanced selector buttons with neumorphic design -->
+        <div class="tabs is-centered" style="margin-bottom: 2rem;">
+          <ul style="border-bottom: none; 
+                     padding: 0.5rem 2rem; 
+                     background: transparent;
+                     border-radius: 16px;">
+            <li data-target="recognition-content">
+              <a class="tab-button" style="margin: 0 1rem;
+                        padding: 1rem 2rem;
+                        border-radius: 12px;
+                        transition: all 0.3s ease;">
+                <span class="icon is-medium" style="margin-right: 0.5rem;">
+                  <i class="fas fa-image fa-lg"></i>
+                </span>
+                <span style="font-weight: 600; font-size: 1.1rem;">Image Recognition</span>
+              </a>
+            </li>
+            <li class="is-active" data-target="retrieval-content">
+              <a class="tab-button" style="margin: 0 1rem;
+                        padding: 1rem 2rem;
+                        border-radius: 12px;
+                        transition: all 0.3s ease;">
+                <span class="icon is-medium" style="margin-right: 0.5rem;">
+                  <i class="fas fa-image"></i><i class="fas fa-arrows-left-right"></i><i class="fas fa-font"></i>
+                </span>
+                <span style="font-weight: 600; font-size: 1.1rem;">Cross-modal Retrieval</span>
+              </a>
+            </li>
+            <li data-target="segmentation-content">
+              <a class="tab-button" style="margin: 0 1rem;
+                        padding: 1rem 2rem;
+                        border-radius: 12px;
+                        transition: all 0.3s ease;">
+                <span class="icon is-medium" style="margin-right: 0.5rem;">
+                  <i class="fas fa-object-group fa-lg"></i>
+                </span>
+                <span style="font-weight: 600; font-size: 1.1rem;">Segmentation</span>
+              </a>
+            </li>
+            <li data-target="mllm-content">
+              <a class="tab-button" style="margin: 0 1rem;
+                        padding: 1rem 2rem;
+                        border-radius: 12px;
+                        transition: all 0.3s ease;">
+                <span class="icon is-medium" style="margin-right: 0.5rem;">
+                  <i class="fas fa-robot"></i>
+                </span>
+                <span style="font-weight: 600; font-size: 1.1rem;">MLLM Tasks</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      
+        <!-- Content sections -->
+        <div id="recognition-content" class="anchor-content">
+          <!-- First table content (Image Recognition) -->
+          <div class="box" style="background-color: #ffffff; padding: 1.5em; margin-bottom: 2em; border-radius: 12px; border-left: 5px solid #96e476;">
+            <p style="color: #333333; margin: 0; line-height: 1.6; font-size: 1.1em;">
+              SAIL achieves superior performance in image recognition tasks. Trained on only 6% of image-text pairs, SAIL outperforms CLIP-L on most datasets. Notably, SAIL-L (GTE) achieves 73.4% accuracy on ImageNet-1k, surpassing the performance of CLIP-L.
+            </p>
+          </div>
+          <div class="table-container" style="margin: 2em auto; max-width: 95%; overflow-x: auto;">
+            <table class="data-table" id="imagenet-table">
+              <thead>
+                <tr class="tb-hdr">
+                  <th style="color: #333333;">Data</th>
+                  <th style="color: #333333;">Model</th>
+                  <th style="color: #333333;">Food101</th>
+                  <th style="color: #333333;">CIFAR10</th>
+                  <th style="color: #333333;">CIFAR100</th>
+                  <th style="color: #333333;">SUN397</th>
+                  <th style="color: #333333;">Cars</th>
+                  <th style="color: #333333;">Aircraft</th>
+                  <th style="color: #333333;">DTD</th>
+                  <th style="color: #333333;">Pets</th>
+                  <th style="color: #333333;">Cal101</th>
+                  <th style="color: #333333;">Flowers</th>
+                  <th style="color: #333333;">Avg.</th>
+                  <th style="color: #333333;">IN-1K</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>CC12M</td>
+                  <td>SAIL-L (GTE)</td>
+                  <td>71.2</td>
+                  <td class="section-group-2">96.3</td>
+                  <td class="section-group-2">83.8</td>
+                  <td>67.2</td>
+                  <td>33.0</td>
+                  <td>8.0</td>
+                  <td>53.0</td>
+                  <td>66.5</td>
+                  <td class="section-group-2">82.6</td>
+                  <td>57.7</td>
+                  <td>61.9</td>
+                  <td>63.9</td>
+                </tr>
+                <tr>
+                  <td>23M Merged</td>
+                  <td>SAIL-L (GTE)</td>
+                  <td>76.1</td>
+                  <td class="section-group-2">97.3</td>
+                  <td class="section-group-2">84.6</td>
+                  <td>68.6</td>
+                  <td>32.0</td>
+                  <td>16.0</td>
+                  <td>52.5</td>
+                  <td>56.9</td>
+                  <td class="section-group-2">83.0</td>
+                  <td>68.3</td>
+                  <td>63.5</td>
+                  <td>65.4</td>
+                </tr>
+                <tr>
+                  <td>CC12M</td>
+                  <td>SAIL-L (NV2)</td>
+                  <td>81.9</td>
+                  <td class="section-group-2">96.1</td>
+                  <td class="section-group-2">85.2</td>
+                  <td>68.3</td>
+                  <td>42.9</td>
+                  <td>16.3</td>
+                  <td class="section-group-2">60.4</td>
+                  <td>84.7</td>
+                  <td class="section-group-2">82.4</td>
+                  <td>67.5</td>
+                  <td>68.6</td>
+                  <td>72.1</td>
+                </tr>
+                <tr>
+                  <td>23M Merged</td>
+                  <td>SAIL-L (NV2)</td>
+                  <td>86.1</td>
+                  <td class="section-group-3">96.7</td>
+                  <td class="section-group-3">86.7</td>
+                  <td>69.8</td>
+                  <td>44.6</td>
+                  <td class="section-group-3">28.6</td>
+                  <td class="section-group-3">63.5</td>
+                  <td>82.3</td>
+                  <td class="section-group-3">85.4</td>
+                  <td class="section-group-3">77.2</td>
+                  <td>72.1</td>
+                  <td class="section-group-3">73.4</td>
+                </tr>
+                <tr style="background-color: #f5f5f5;">
+                  <td style="color: #666;">LAION400M</td>
+                  <td style="color: #666;">CLIP-L</td>
+                  <td style="color: #666;">90.1</td>
+                  <td style="color: #666;">94.6</td>
+                  <td style="color: #666;">77.4</td>
+                  <td style="color: #666;">72.6</td>
+                  <td style="color: #666;">89.6</td>
+                  <td style="color: #666;">25.0</td>
+                  <td style="color: #666;">60.4</td>
+                  <td style="color: #666;">91.7</td>
+                  <td style="color: #666;">82.1</td>
+                  <td style="color: #666;">75.5</td>
+                  <td style="color: #666;">75.9</td>
+                  <td style="color: #666;">72.7</td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="font-style: italic; color: #666; margin-top: 1em;">
+              Table: Zero-shot classification top 1 accuracy (%) on various datasets. 
+              <span style="background-color: #ffe4cc; padding: 0 4px;"></span> 
+             indicate performance better than CLIP baseline, while 
+              <span style="background-color: #fffbe6; padding: 0 4px;"></span> 
+             represent the highest scores across all models.
+            </p>
+          </div>
+        </div>
+      
+        <div id="retrieval-content" class="anchor-content">
+          <!-- Second table content (Cross-modal Retrieval) -->
+          <div class="table-container" style="margin: 2em auto; max-width: 95%; overflow-x: auto;">
+            <div class="box" style="background-color: #ffffff; padding: 1.5em; margin-bottom: 2em; border-radius: 12px; border-left: 5px solid #96e476; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+              <p style="color: #333333; margin: 0; line-height: 1.6; font-size: 1.1em;">
+                SAIL consistently outperforms CLIP-L on all retrieval-based tasks. Especially on complex reasoning tasks, SAIL achieves significant improvements over CLIP-L. This again highlights the importance of the advanced language representation in performing vision-language tasks.
+              </p>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr class="tb-hdr">
+                  <th rowspan="2">Data</th>
+                  <th rowspan="2">Model</th>
+                  <th colspan="2" style="background-color: rgba(137, 203, 225, 0.4);">MSCOCO</th>
+                  <th colspan="2" style="background-color: rgba(137, 203, 225, 0.4);">Flickr30k</th>
+                  <th colspan="3" style="background-color: rgba(127, 168, 216, 0.5);">Winoground</th>
+                  <th style="background-color: rgba(120, 135, 204, 0.3);">MMVP</th>
+                </tr>
+                <tr class="tb-hdr">
+                  <th style="background-color: rgba(137, 203, 225, 0.4);">I2T</th>
+                  <th style="background-color: rgba(137, 203, 225, 0.4);">T2I</th>
+                  <th style="background-color: rgba(137, 203, 225, 0.4);">I2T</th>
+                  <th style="background-color: rgba(137, 203, 225, 0.4);">T2I</th>
+                  <th style="background-color: rgba(127, 168, 216, 0.5);">T.</th>
+                  <th style="background-color: rgba(127, 168, 216, 0.5);">I.</th>
+                  <th style="background-color: rgba(127, 168, 216, 0.5);">G.</th>
+                  <th style="background-color: rgba(120, 135, 204, 0.3);">Avg.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="10" style="text-align: center; font-style: italic;">Model Architecture: ViT-L/14</td>
+                </tr>
+                <tr>
+                  <td>CC12M</td>
+                  <td>SAIL-L (GTE)</td>
+                  <td>50.4</td>
+                  <td>39.3</td>
+                  <td>78.4</td>
+                  <td>66.6</td>
+                  <td>33.25</td>
+                  <td>13.0</td>
+                  <td>9.25</td>
+                  <td>17.0</td>
+                </tr>
+                <tr>
+                  <td>23M Merged</td>
+                  <td>SAIL-L (GTE)</td>
+                  <td>54.1</td>
+                  <td>42.7</td>
+                  <td>80.8</td>
+                  <td>68.9</td>
+                  <td>34.0</td>
+                  <td>13.25</td>
+                  <td>8.75</td>
+                  <td>22.2</td>
+                </tr>
+                <tr>
+                  <td>CC12M</td>
+                  <td>SAIL-L (NV2)</td>
+                  <td>57.3</td>
+                  <td class="section-group-2">45.3</td>
+                  <td>84.9</td>
+                  <td class="section-group-2">73.0</td>
+                  <td class="section-group-2">37.75</td>
+                  <td class="section-group-2">18.25</td>
+                  <td class="section-group-2">13.2</td>
+                  <td class="section-group-2">28.0</td>
+                </tr>
+                <tr>
+                  <td>23M Merged</td>
+                  <td>SAIL-L (NV2)</td>
+                  <td class="section-group-3">62.4</td>
+                  <td class="section-group-3">48.6</td>
+                  <td class="section-group-3">87.6</td>
+                  <td class="section-group-3">75.7</td>
+                  <td class="section-group-3">40.25</td>
+                  <td class="section-group-3">18.75</td>
+                  <td class="section-group-3">15.0</td>
+                  <td class="section-group-3">28.9</td>
+                </tr>
+                <tr style="background-color: #f5f5f5;">
+                  <td style="color: #666;">LAION400M</td>
+                  <td style="color: #666;">CLIP-L</td>
+                  <td style="color: #666;">59.7</td>
+                  <td style="color: #666;">43.0</td>
+                  <td style="color: #666;">87.6</td>
+                  <td style="color: #666;">70.2</td>
+                  <td style="color: #666;">30.5</td>
+                  <td style="color: #666;">11.5</td>
+                  <td style="color: #666;">8.75</td>
+                  <td style="color: #666;">20.0</td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="font-style: italic; color: #666; margin-top: 1em;">
+              Table: Results on 
+              <span style="background-color: rgba(137, 203, 225, 0.4); padding: 0 4px;">standard retrieval</span>, 
+              <span style="background-color: rgba(127, 168, 216, 0.5); padding: 0 4px;">complex reasoning</span> and
+              <span style="background-color: rgba(120, 135, 204, 0.3); padding: 0 4px;">visual-centric</span> tasks.
+              We report Recall@1 for MSCOCO and Flickr30k; Text, Image and Group scores for Winoground; and the average score for MMVP.
+            </p>
+          </div>
+          <div class="content has-text-justified">
+            <p style="color: #333333;">
+              We analyzed image-image cosine similarity for 150 MMVP image pairs to evaluate fine-grained visual discrimination including subtle differences in <strong>orientation, perspective, quantity, color, and contextual details</strong>. While CLIP tends to assign high similarity scores even between images with varying conditions, DINOv2 better captures subtle visual differences. Our analysis shows that SAIL's cosine similarity distribution aligns closely with DINOv2's, <strong>demonstrating that SAIL inherits DINOv2's strong capability for fine-grained visual discrimination</strong>.
+            </p>
+          </div>
+          <div class="columns is-centered" style="margin-top: 2em;">
+            <div class="column is-2">
+              <figure class="image" style="margin-bottom: 1em;">
+                <img src="static/images/mmvp_1.jpg"
+                     alt="MMVP Example 1" 
+                     style="border: 2px solid #2C3E50; border-radius: 8px; padding: 0.5em; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+              </figure>
+              <figure class="image">
+                <img src="static/images/mmvp_2.jpg"
+                     alt="MMVP Example 2"
+                     style="border: 2px solid #2C3E50; border-radius: 8px; padding: 0.5em; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+              </figure>
+            </div>
+            <div class="column is-4">
+              <figure class="image">
+                <img src="static/images/cosine_similarity_plot.png" 
+                     alt="Cosine Similarity Distribution Plot"
+                     style="border: 2px solid #2C3E50; border-radius: 8px; padding: 0.5em; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <figcaption style="text-align: center; font-size: 0.9em; color: #666; margin-top: 0.5em;">
+                  <em>Figure: Distribution of cosine similarities between MMVP image pairs for different vision encoders.</em>
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+      
+        <div id="segmentation-content" class="anchor-content">
+          <!-- Third table content (Segmentation) -->
+          <p style="color: #333333;">
+            An image is represented as a sequence of tokens $X = [x_{cls}, X_{patch}]$, where $X_{patch} \in \mathbb{R}^{hw \times d}$. 
+            We compute cosine similarity between each patch and a sentence embedding $y_{text}$ (e.g., <em>"a photo of a {label}"</em>) 
+            to produce segmentation masks: $\mathcal{M} = \arg \max \cos(X_{patch}, y_{text})$.
+          </p>
+          <div class="table-container" style="margin: 2em auto; max-width: 95%; overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr class="tb-hdr">
+                  <th>Data</th>
+                  <th>Model (ViT-L/14)</th>
+                  <th>ADE20K</th>
+                  <th>Stuff</th>
+                  <th>VOC20</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="background-color: #f5f5f5;">
+                  <td>LAION400M</td>
+                  <td>CLIP ‡</td>
+                  <td>1.2</td>
+                  <td>2.4</td>
+                  <td>15.8</td>
+                </tr>
+                <tr style="background-color: #f5f5f5;">
+                  <td>LAION400M</td>
+                  <td>MaskCLIP ‡</td>
+                  <td>6.9</td>
+                  <td>8.9</td>
+                  <td>30.1</td>
+                </tr>
+                <tr style="background-color: #f5f5f5;">
+                  <td>LAION400M</td>
+                  <td>SCLIP ‡</td>
+                  <td>7.1</td>
+                  <td>13.1</td>
+                  <td>60.3</td>
+                </tr>
+                <tr>
+                  <td>23M Merged</td>
+                  <td>SAIL (GTE)</td>
+                  <td class="section-group-2">13.5</td>
+                  <td class="section-group-2">14.1</td>
+                  <td class="section-group-2">65.2</td>
+                </tr>
+                <tr>
+                  <td>23M Merged</td>
+                  <td>SAIL (NV2)</td>
+                  <td class="section-group-3">14.2</td>
+                  <td class="section-group-3">14.7</td>
+                  <td class="section-group-3">66.1</td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="font-style: italic; color: #666; margin-top: 1em;">
+              Table: Open-vocabulary semantic segmentation mIOU results compared with CLIP-based methods. 
+              All models use ViT-L/14 as the vision architecture. ‡ Cited results.
+            </p>
+          </div>
+        </div>
+      
+        <div id="mllm-content" class="anchor-content">
+          <!-- Fourth table content (MLLM Tasks) -->
+          <div class="columns is-centered is-vcentered">
+            <div class="column">
+              <p style="color: #333333;">
+                We demonstrate that the alignment training using SAIL framework can transform features from SSL models like DINOv2 to be more language-compatible, thus better suited for integration with MLLMs for tackling complex vision-language tasks. We train LLaVA-1.5 with various vision encoders and evaluate across downstream tasks.
+              </p>
+            </div>
+            <div class="column is-narrow">
+              <img src="static/images/mllm.png" style="width:300px; box-shadow: none;">
+            </div>
+          </div>
+          <div class="table-container" style="margin: 2em auto; max-width: 95%; overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr class="tb-hdr">
+                  <th>Model@224px</th>
+                  <th>VTune</th>
+                  <th>SEED<sup>IMG</sup></th>
+                  <th>GQA</th>
+                  <th>VizWiz</th>
+                  <th>PoPE</th>
+                  <th>TextVQA</th>
+                  <th>MMB</th>
+                  <th>VQA<sup>v2</sup></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>0&nbsp;&nbsp;&nbsp;DINOv2-L</td>
+                  <td>✗</td>
+                  <td>61.47</td>
+                  <td>61.08</td>
+                  <td>44.12</td>
+                  <td>85.5</td>
+                  <td>45.37</td>
+                  <td>56.96</td>
+                  <td>74.4</td>
+                </tr>
+                <tr>
+                  <td>1&nbsp;&nbsp;&nbsp;DINOv2-L</td>
+                  <td>✓</td>
+                  <td>62.12</td>
+                  <td>61.53</td>
+                  <td>46.59</td>
+                  <td>85.7</td>
+                  <td>45.92</td>
+                  <td>58.85</td>
+                  <td>74.69</td>
+                </tr>
+                <tr>
+                  <td>2&nbsp;&nbsp;&nbsp;SAIL-L</td>
+                  <td>✓</td>
+                  <td class="section-group-3">65.43</td>
+                  <td class="section-group-3">62.63</td>
+                  <td class="section-group-3">50.00</td>
+                  <td class="section-group-3">86.16</td>
+                  <td>46.53</td>
+                  <td>60.14</td>
+                  <td class="section-group-3">76.77</td>
+                </tr>
+                <tr style="background-color: #f5f5f5;">
+                  <td style="color: #666;">3&nbsp;&nbsp;&nbsp;CLIP-L/14*</td>
+                  <td style="color: #666;">✗</td>
+                  <td style="color: #666;">64.05</td>
+                  <td style="color: #666;">61.58</td>
+                  <td style="color: #666;">48.87</td>
+                  <td style="color: #666;">85.74</td>
+                  <td style="color: #666;">54.56</td>
+                  <td style="color: #666;">63.06</td>
+                  <td style="color: #666;">75.32</td>
+                </tr>
+                <tr style="background-color: #f5f5f5;">
+                  <td style="color: #666;">4&nbsp;&nbsp;&nbsp;CLIP-L/14*</td>
+                  <td style="color: #666;">✓</td>
+                  <td style="color: #666;">64.15</td>
+                  <td style="color: #666;">61.54</td>
+                  <td style="color: #666;">49.93</td>
+                  <td style="color: #666;">85.73</td>
+                  <td style="color: #666;">54.18</td>
+                  <td style="color: #666;">64.12</td>
+                  <td style="color: #666;">76.36</td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="font-style: italic; color: #666; margin-top: 1em;">
+              Table: LLaVA-1.5 with various vision models. *Reproduced using OpenAI CLIP-L@224. VTune indicates if the vision encoder is fine-tuned during the instruction tuning stage.
+            </p>
+          </div>
+
+          <div class="box" style="background-color: #ffffff; padding: 1.5em; margin-bottom: 2em; border-radius: 12px; border-left: 5px solid #96e476;">
+            <p style="color: #333333; margin: 0; line-height: 1.8; font-size: 1.1em; text-align: justify;">
+              <strong>SAIL-L (row 2) significantly enhances DINOv2's capabilities through alignment training on 23M image-text pairs.</strong> Despite CLIP being trained on 400M pairs, <strong>SAIL transforms DINOv2 from trailing CLIP to outperforming it on 5 out of 7 tasks (rows 1-4)</strong>. This improvement holds even when compared to a CLIP model fine-tuned during instruction-tuning (row 4), <strong>demonstrating SAIL's effectiveness in learning language-aligned visual features that integrate seamlessly with LLMs</strong>. While SAIL shows lower performance on TextVQA and MMB tasks requiring OCR capabilities, this limitation stems from DINOv2's inherent architecture, as evidenced by consistently lower OCR performance in DINOv2 baselines (rows 0-1) compared to CLIP variants.
+            </p>
+          </div>
+
+
+        </div>
+      </div>
+
+  <footer class="footer">
+    <div class="container">
+      <!-- <div class="content has-text-centered">
+        <a class="icon-link" href="https://arxiv.org/abs/2212.14532">
+          <i class="fas fa-file-pdf"></i>
+        </a>
+        <a class="icon-link" href="https://github.com/bair-climate-initiative/scale-mae/" class="external-link"
+          disabled>
+          <i class="fab fa-github"></i>
+        </a>
+      </div> -->
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              This website is licensed under a <a rel="license"
+                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+                Commons Attribution-ShareAlike 4.0 International License</a>.
+            </p>
+            <p>
+              This website came from the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies project website
+                template</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const tabs = document.querySelectorAll('.tabs li');
+      
+      function activateTab(tab) {
+        // Get the parent tabs container
+        const tabsContainer = tab.closest('.tabs');
+        // Only deactivate tabs in the same container
+        tabsContainer.querySelectorAll('li').forEach(t => t.classList.remove('is-active'));
+        
+        // Find all content sections related to this tab group
+        const tabGroup = tabsContainer.parentElement;
+        tabGroup.querySelectorAll('.anchor-content').forEach(content => {
+          content.classList.remove('is-active');
+          content.style.display = 'none';
+        });
+        
+        // Add active classes
+        tab.classList.add('is-active');
+        const targetId = tab.getAttribute('data-target');
+        const targetContent = document.getElementById(targetId);
+        if (targetContent) {
+          targetContent.style.display = 'block';
+          setTimeout(() => {
+            targetContent.classList.add('is-active');
+          }, 10);
+        }
+      }
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => activateTab(tab));
+      });
+
+      // Initialize with both default tabs
+      const languageTab = document.querySelector('[data-target="language-anchor"]');
+      const retrievalTab = document.querySelector('[data-target="retrieval-content"]');
+      
+      if (languageTab) {
+        activateTab(languageTab);
+      }
+      if (retrievalTab) {
+        activateTab(retrievalTab);
+      }
+    });
+  </script>
+</body>
+
+</html>
