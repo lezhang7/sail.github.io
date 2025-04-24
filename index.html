@@ -29,12 +29,23 @@
   <style>
     :root {
       color-scheme: light only;
+      --apple-gray: #f5f5f7;
+      --apple-dark: #1d1d1f;
+      --apple-blue: #0071e3;
+      --apple-gradient: linear-gradient(135deg, #42a5f5 0%, #0066cc 100%);
+      --apple-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      --apple-radius: 12px;
+      --transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
     
     /* 确保所有文本使用深色 */
     body {
       background-color: #ffffff !important;
       color: #333333 !important;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif !important;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     
     /* 防止媒体查询影响 */
@@ -44,6 +55,239 @@
       }
     }
     
+    .title {
+      color: var(--apple-dark) !important;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif !important;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    
+    /* Add highlight badge styling */
+    .highlight-badge {
+      display: inline-block;
+      background: var(--apple-blue);
+      color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-weight: 500;
+      margin-left: 1rem;
+      box-shadow: 0 4px 10px rgba(0, 113, 227, 0.3);
+      letter-spacing: 0.02em;
+      font-size: 0.9rem;
+      position: relative;
+      top: -5px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .highlight-badge:hover {
+      transform: scale(1.15) !important;
+      box-shadow: 0 8px 20px rgba(0, 113, 227, 0.5) !important;
+    }
+    
+    /* Enhance section headers */
+    .section-header {
+      padding: 3rem 0 2rem;
+      background-color: var(--apple-gray);
+      margin-bottom: 3rem;
+      position: relative;
+    }
+    
+    .section-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(0,0,0,0.03), rgba(0,0,0,0.06), rgba(0,0,0,0.03));
+    }
+    
+    /* Improve footer styling */
+    .footer {
+      background-color: var(--apple-gray);
+      padding: 4rem 1.5rem;
+      border-top: 1px solid rgba(0,0,0,0.05);
+      font-size: 0.9rem;
+      color: #86868b;
+    }
+    
+    /* Add paper citation box */
+    .citation-box {
+      background-color: white;
+      border-radius: var(--apple-radius);
+      padding: 2rem;
+      margin: 3rem 0;
+      box-shadow: var(--apple-shadow);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    /* Premium content boxes */
+    .premium-box {
+      background-color: white;
+      border-radius: var(--apple-radius);
+      padding: 2rem;
+      margin: 1.5rem 0;
+      box-shadow: var(--apple-shadow);
+      transition: var(--transition);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .premium-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    }
+    
+    /* Button styling */
+    .button {
+      border-radius: 20px !important;
+      font-weight: 500 !important;
+      transition: var(--transition) !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+    }
+    
+    .button:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15) !important;
+    }
+    
+    /* Table styling */
+    .data-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+      margin: 1.5em 0;
+      border-radius: var(--apple-radius);
+      overflow: hidden;
+      box-shadow: var(--apple-shadow);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .data-table th, .data-table td {
+      padding: 12px 16px;
+      text-align: center;
+      border: none;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tb-hdr {
+      background-color: var(--apple-gray);
+      font-weight: 500;
+      color: var(--apple-dark) !important;
+    }
+    
+    /* Tabs styling */
+    .tabs ul {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      border-bottom: none !important;
+      gap: 10px;
+    }
+
+    .tabs li a {
+      position: relative;
+      color: #86868b;
+      border: none !important;
+      border-radius: 20px !important;
+      padding: 0.7rem 1.5rem !important;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .tabs li.is-active a {
+      background: var(--apple-blue);
+      color: white !important;
+      box-shadow: 0 4px 10px rgba(0, 113, 227, 0.3);
+    }
+
+    .tabs li a:hover {
+      transform: translateY(-2px);
+      color: var(--apple-dark);
+    }
+    
+    /* Content box styles */
+    .anchor-content {
+      transition: var(--transition);
+      opacity: 0;
+      height: 0;
+      overflow: hidden;
+    }
+
+    .anchor-content.is-active {
+      opacity: 1;
+      height: auto;
+      background: white;
+      border-radius: var(--apple-radius);
+      box-shadow: var(--apple-shadow);
+      padding: 2rem;
+      margin: 1.5rem 0;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    /* Hero section enhancement */
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom right, rgba(0,0,0,0.4), rgba(0,0,0,0.1));
+      z-index: 1;
+    }
+    
+    /* Author links */
+    .author-link {
+      transition: var(--transition);
+      position: relative;
+    }
+    
+    .author-link:after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: white;
+      transition: var(--transition);
+    }
+    
+    .author-link:hover:after {
+      width: 100%;
+    }
+    
+    /* Section dividers */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,0.1), rgba(0,0,0,0));
+      margin: 3rem 0;
+    }
+    
+    /* Image styling */
+    figure.premium-image {
+      border-radius: var(--apple-radius);
+      overflow: hidden;
+      box-shadow: var(--apple-shadow);
+      transition: var(--transition);
+    }
+    
+    figure.premium-image:hover {
+      transform: scale(1.02);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+    
+    figure.premium-image img {
+      border-radius: var(--apple-radius);
+      transition: var(--transition);
+    }
+    
+    /* Keep existing styles */
     .title {
       color: #363636 !important;
     }
@@ -202,9 +446,67 @@
     }
 
     .tabs li.is-active a.tab-button {
-      background: linear-gradient(145deg, #ffffff, #f0f0f0);
-      box-shadow: 4px 4px 8px #d1d1d1,
-                  -4px -4px 8px #ffffff;
+      background: #4FC3F7; /* Sky blue color */
+      color: white !important;
+      box-shadow: 0 4px 10px rgba(79, 195, 247, 0.3);
+      transform: translateY(-1px);
+      border: none !important;
+    }
+    
+    /* Update hover effect to match the theme */
+    .tabs li a.tab-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(79, 195, 247, 0.2);
+      color: #4FC3F7;
+    }
+    
+    /* Remove the existing neumorphic styling for active tabs */
+    .tabs li.is-active a {
+      background: #4FC3F7;
+      color: white !important;
+      box-shadow: 0 4px 10px rgba(79, 195, 247, 0.3);
+      transform: translateY(-1px);
+      border: none !important;
+    }
+
+    /* Add pulse animation for the highlight badge */
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(0, 113, 227, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(0, 113, 227, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(0, 113, 227, 0);
+      }
+    }
+    
+    /* Style for the citation box */
+    #citation-text {
+      transition: background-color 0.3s ease;
+    }
+    
+    #citation-text:hover {
+      background-color: #e8e8e8;
+    }
+    
+    #citation-text::after {
+      content: "Click to copy";
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background-color: rgba(0,0,0,0.7);
+      color: white;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    #citation-text:hover::after {
+      opacity: 1;
     }
   </style>
 
@@ -230,15 +532,7 @@
                               background-position: center;
                               position: relative;
                               padding: 0;">
-    <div style="position: absolute; 
-                top: 0; 
-                left: 0; 
-                right: 0;
-                bottom: 0;
-                width: 100%; 
-                height: 100%; 
-                background-color: rgba(0, 0, 0, 0.05);
-                z-index: 1;"></div>
+    <div class="hero-overlay"></div>
     
     <div class="hero-body" style="position: relative; z-index: 2;">
       <div class="container is-fluid">
@@ -248,6 +542,7 @@
             <div style="position: sticky; top: 2rem;">
               <h1 class="title is-1" style="font-size: 3.5rem; line-height: 1.2; margin-bottom: 2rem;">
                 <span style="color: white; font-weight: 600; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Assessing and Learning Alignment of Unimodal Vision and Language Models</span>
+                <span class="highlight-badge" style="font-size: 1.2rem; padding: 0.5rem 1.2rem; transform: scale(1.1); box-shadow: 0 6px 15px rgba(0, 113, 227, 0.4); animation: pulse 2s infinite;">CVPR 2025 Highlight</span>
               </h1>
               <div class="authors" style="margin: 2rem 0;">
                 <div style="margin-bottom: 1.5rem;">
@@ -271,15 +566,15 @@
               </div>
 
               <div class="buttons" style="margin-top: 3rem;">
-                <a href="https://arxiv.org/abs/2412.04616" class="button is-medium" style="background: #E67E22; color: white; border: none; margin-right: 1rem; transition: transform 0.2s; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                <a href="https://arxiv.org/abs/2412.04616" class="button is-medium" style="background: var(--apple-blue); color: white; border: none; margin-right: 1rem;">
                   <span class="icon"><i class="ai ai-arxiv"></i></span>
                   <span>Paper</span>
                 </a>
-                <a href="https://github.com/lezhang7/SAIL" class="button is-medium" style="background: #2C3E50; color: white; border: none; transition: transform 0.2s; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                <a href="https://github.com/lezhang7/SAIL" class="button is-medium" style="background: #2C3E50; color: white; border: none;">
                   <span class="icon"><i class="fab fa-github"></i></span>
                   <span>Code</span>
                 </a>
-                <a href="static/images/sail poster.pdf" class="button is-medium" style="background: #2C3E50; color: white; border: none; transition: transform 0.2s; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                <a href="static/images/sail poster.pdf" class="button is-medium" style="background: #2C3E50; color: white; border: none;">
                   <span class="icon"><i class="fas fa-file-pdf"></i></span>
                   <span>Poster</span>
                 </a>
@@ -289,34 +584,66 @@
 
     <!-- Right Column - Motivation and Contributions -->
     <div class="column" style="padding: 4rem; margin-top: 2rem;">
-      <div style="color: white; background-color: rgba(1, 0, 0, 0.65); padding: 2rem; border-radius: 10px; backdrop-filter: blur(20px); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); -webkit-backdrop-filter: blur(20px);">
-        <h2 style="color: #FFA726; font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">Assessing Alignment</h2>
-        <div style="font-size: 1.1rem; line-height: 1.8;">
-          <p style="margin-bottom: 1.5rem;">
-            <strong style="color: #FFE082; font-style: italic;">How well are unimodal vision and language models aligned?</strong> <i>This question is critical for advancing multimodal AI.  Although prior work has approached this problem, their methodologies often do not translate effectively to practical applications. To address this, we propose a</i> <strong style="color: #ffffff; font-style: italic; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">direct assessment method</strong>, <i>inspired by linear probing, for evaluating vision-language alignment.</i>
-          </p>
+      <div style="color: white; background-color: rgba(0, 0, 0, 0.75); padding: 2.5rem; border-radius: var(--apple-radius); backdrop-filter: blur(20px); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); transition: transform 0.3s ease, box-shadow 0.3s ease;">
+        
+        <!-- Assessing Alignment Section -->
+        <div class="content-block" style="margin-bottom: 2.5rem;">
+          <h2 style="color: #FFA726; font-size: 2.2rem; font-weight: 700; margin-bottom: 1.5rem; position: relative; display: inline-block;">
+            Assessing Alignment
+            <span style="position: absolute; bottom: -5px; left: 0; width: 60px; height: 3px; background: linear-gradient(90deg, #FFA726, transparent);"></span>
+          </h2>
+          
+          <div style="font-size: 1.15rem; line-height: 1.8; padding-left: 0.5rem; border-left: 3px solid rgba(255, 167, 38, 0.4); margin-left: 0.5rem;">
+            <p style="margin-bottom: 1.5rem;">
+              <strong style="color: #FFE082; font-style: italic; letter-spacing: 0.02em;">How well are unimodal vision and language models aligned?</strong> 
+              <i>This question is critical for advancing multimodal AI. Although prior work has approached this problem, their methodologies often do not translate effectively to practical applications. To address this, we propose a</i> 
+              <strong style="color: #ffffff; font-style: italic; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding: 0 0.2rem;">direct assessment method</strong>, 
+              <i>inspired by linear probing, for evaluating vision-language alignment.</i>
+            </p>
+          </div>
         </div>
-    
-        <h2 style="color: #FFA726; font-size: 2rem; font-weight: 700; margin: 1rem 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">Learning Alignment</h2>
-        <div style="font-size: 1.1rem; line-height: 1.8; text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">
-          <p style="margin-bottom: 1.5rem;">
-            <strong style="color: #FFE082; font-style: italic;">How to efficiently learn alignment between unimodal models?</strong> <i>We introduce</i> 
-            <strong style="color: #4FC3F7; font-style: italic;"> Swift Alignment of Image and Language (SAIL)</strong>, <i>an efficient transfer learning framework that aligns pretrained unimodal vision and language models for downstream tasks.</i>
-          </p>
-          <p style="margin-bottom: 1.5rem;">
-            <i>By leveraging only ~6% of the paired image-text data required by CLIP,</i> <strong style="color: #4FC3F7; font-style: italic;">SAIL</strong> <i>achieves multimodal alignment using a single A100 GPU with just ~5 hours of training. 
-            It supports batch sizes up to 32,768 and delivers outstanding performance, including 73.4% zero-shot accuracy on ImageNet (surpassing CLIP's 72.7%) while excelling in zero-shot retrieval, complex reasoning, and semantic segmentation. It also enahnces SSL vision encoders such as DINOv2 when integrated in multimodal large language models.</i>
-          </p>
+        
+        <!-- Learning Alignment Section -->
+        <div class="content-block">
+          <h2 style="color: #FFA726; font-size: 2.2rem; font-weight: 700; margin-bottom: 1.5rem; position: relative; display: inline-block;">
+            Learning Alignment
+            <span style="position: absolute; bottom: -5px; left: 0; width: 60px; height: 3px; background: linear-gradient(90deg, #FFA726, transparent);"></span>
+          </h2>
+          
+          <div style="font-size: 1.15rem; line-height: 1.8; padding-left: 0.5rem; border-left: 3px solid rgba(255, 167, 38, 0.4); margin-left: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+            <p style="margin-bottom: 1.5rem;">
+              <strong style="color: #FFE082; font-style: italic; letter-spacing: 0.02em;">How to efficiently learn alignment between unimodal models?</strong> 
+              <i>We introduce</i> 
+              <strong style="color: #4FC3F7; font-style: italic; position: relative; display: inline-block;">
+                Swift Alignment of Image and Language (SAIL)
+                <span style="position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background: linear-gradient(90deg, rgba(79, 195, 247, 0.3), rgba(79, 195, 247, 0.8), rgba(79, 195, 247, 0.3));"></span>
+              </strong>, 
+              <i>an efficient transfer learning framework that aligns pretrained unimodal vision and language models for downstream tasks.</i>
+            </p>
+            
+            <p style="margin-bottom: 1.5rem; position: relative;">
+              <i>By leveraging only ~6% of the paired image-text data required by CLIP,</i> 
+              <strong style="color: #4FC3F7; font-style: italic; position: relative; display: inline-block;">
+                SAIL
+                <span style="position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background: linear-gradient(90deg, rgba(79, 195, 247, 0.3), rgba(79, 195, 247, 0.8), rgba(79, 195, 247, 0.3));"></span>
+              </strong> 
+              <i>achieves multimodal alignment using a single A100 GPU with just ~5 hours of training. 
+              It supports batch sizes up to 32,768 and delivers outstanding performance, including 73.4% zero-shot accuracy on ImageNet (surpassing CLIP's 72.7%) while excelling in zero-shot retrieval, complex reasoning, and semantic segmentation. It also enhances SSL vision encoders such as DINOv2 when integrated in multimodal large language models.</i>
+            </p>
+          </div>
         </div>
+        
+        <!-- Decorative element -->
+        <div style="position: absolute; top: 20px; right: 20px; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, rgba(79, 195, 247, 0.2) 0%, rgba(0,0,0,0) 70%); z-index: 0;"></div>
+        <div style="position: absolute; bottom: 30px; left: 30px; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 167, 38, 0.15) 0%, rgba(0,0,0,0) 70%); z-index: 0;"></div>
       </div>
     </div>
 
     </section>
 
-  <section class="hero is-light is-small">
+  <section class="hero is-light is-small section-header">
     <div class="hero-body has-text-centered">
       <h1 class="title is-1 mmmu">
-      
         <span class="mmmu">Part 1: Assessing Alignment between Unimodal Models</span>
       </h1>
     </div>
@@ -326,26 +653,25 @@
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column">
-          <h2 class="title is-3" style="color: #2C3E50;">Overview</h2>
+          <h2 class="title is-3" style="color: var(--apple-dark);">Overview</h2>
           <div class="column is-centered">
-            <div class="box content has-text-justified" style="background-color: #ffffff; padding: 1.5em; border-left: 5px solid #2C3E50; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-              <h4 class="title is-4" style="color: #2C3E50;">Key Questions</h4>
+            <div class="premium-box">
+              <h4 class="title is-4" style="color: var(--apple-dark);">Key Questions</h4>
               <ul style="margin-top: 1em;">
-                <li><strong style="color: #2C3E50;">Alignment Capability:</strong> <span style="color: #2C3E50;">How well can unimodal visual and language models align for zero-shot open-vocabulary tasks?</span></li>
-                <li><strong style="color: #2C3E50;">Model Architecture Impact:</strong> <span style="color: #2C3E50;">Do larger models trained on extensive datasets yield better alignment, or does the choice of self-supervised learning (SSL) methods play a more significant role?</span></li>
-                <li><strong style="color: #2C3E50;">Representation Properties:</strong> <span style="color: #2C3E50;">What properties of SSL representations—such as linear separability or clustering quality—drive stronger cross-modal alignment?</span></li>
+                <li><strong style="color: var(--apple-dark);">Alignment Capability:</strong> <span style="color: #2C3E50;">How well can unimodal visual and language models align for zero-shot open-vocabulary tasks?</span></li>
+                <li><strong style="color: var(--apple-dark);">Model Architecture Impact:</strong> <span style="color: #2C3E50;">Do larger models trained on extensive datasets yield better alignment, or does the choice of self-supervised learning (SSL) methods play a more significant role?</span></li>
+                <li><strong style="color: var(--apple-dark);">Representation Properties:</strong> <span style="color: #2C3E50;">What properties of SSL representations—such as linear separability or clustering quality—drive stronger cross-modal alignment?</span></li>
               </ul>
-              <hr style="border-top: 1px solid #2C3E50; margin: 1em 0;">
+              <div class="section-divider"></div>
               <p style="font-size: 1em; line-height: 1.6; color: #2C3E50;">
-                We propose <strong style="color: #2C3E50;">Visual-Language Alignment Probing</strong>, a direct assessment method inspired by linear probing in SSL evaluation. This approach freezes pretrained vision and language backbones and trains a lightweight linear alignment layer on image-text datasets.     
+                We propose <strong style="color: var(--apple-dark);">Visual-Language Alignment Probing</strong>, a direct assessment method inspired by linear probing in SSL evaluation. This approach freezes pretrained vision and language backbones and trains a lightweight linear alignment layer on image-text datasets.     
               </p>
             </div>
             </div>
-            <figure class="image" style="margin-top: 2rem; width: 50%; margin-left: auto; margin-right: auto;">
+            <figure class="premium-image" style="margin-top: 2rem; width: 50%; margin-left: auto; margin-right: auto;">
               <img src="static/images/overview.png" 
-                   alt="Overview Illustration" 
-                   style="border: 2px solid #2C3E50; border-radius: 8px; padding: 0.5em; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-              <figcaption style="text-align: center; font-size: 0.9em; color: #2C3E50; margin-top: 0.5em;">
+                   alt="Overview Illustration">
+              <figcaption style="text-align: center; font-size: 0.9em; color: #86868b; margin-top: 1rem;">
                 <em>Figure: Illustration of Visual-Language Alignment Probing</em>
               </figcaption>
             </figure>
@@ -457,9 +783,10 @@
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="hero is-light is-small">
+    <section class="hero is-light is-small section-header">
       <div class="hero-body has-text-centered">
         <h1 class="title is-1 mmmu">
         
@@ -474,7 +801,7 @@
           <div class="column">
             <h2 class="title is-3">Swift Alignment of Image and Language Framework</h2>
             <div class="column is-centered">
-              <div class="content">
+              <div class="premium-box">
                 <p style="color: #333333;">
                   We introduce <strong style="color: #4FC3F7">Swift Alignment of Image and Language (SAIL)</strong>, a streamlined framework for aligning pretrained vision and language models. Our efficient two-step training pipeline optimizes both performance and computational costs. Specifically, SAIL achieves superior alignment through three key optimizations:
                 </p>
@@ -1098,17 +1425,28 @@
         </div>
       </div>
 
+  <!-- Add citation section before footer -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="citation-box">
+        <h3 class="title is-4">Citation</h3>
+        <pre id="citation-text" style="background-color: var(--apple-gray); padding: 1rem; border-radius: 8px; overflow-x: auto; font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.9rem; cursor: pointer; position: relative;" onclick="copyCitation()">
+@inproceedings{zhang2025sail,
+  title={Assessing and Learning Alignment of Unimodal Vision and Language Models},
+  author={Zhang, Le and Yang, Qian and Agrawal, Aishwarya},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year={2025}
+}
+        </pre>
+        <div id="copy-message" style="position: absolute; background-color: #4FC3F7; color: white; padding: 0.5rem 1rem; border-radius: 4px; display: none; font-weight: 500; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+          Citation copied to clipboard!
+        </div>
+      </div>
+    </div>
+  </section>
+
   <footer class="footer">
     <div class="container">
-      <!-- <div class="content has-text-centered">
-        <a class="icon-link" href="https://arxiv.org/abs/2212.14532">
-          <i class="fas fa-file-pdf"></i>
-        </a>
-        <a class="icon-link" href="https://github.com/bair-climate-initiative/scale-mae/" class="external-link"
-          disabled>
-          <i class="fab fa-github"></i>
-        </a>
-      </div> -->
       <div class="columns is-centered">
         <div class="column is-8">
           <div class="content">
@@ -1171,6 +1509,20 @@
         activateTab(retrievalTab);
       }
     });
+
+    function copyCitation() {
+      const citationText = document.getElementById('citation-text').innerText;
+      navigator.clipboard.writeText(citationText).then(() => {
+        const copyMessage = document.getElementById('copy-message');
+        copyMessage.style.display = 'block';
+        copyMessage.style.top = (event.clientY - 40) + 'px';
+        copyMessage.style.left = (event.clientX - 100) + 'px';
+        
+        setTimeout(() => {
+          copyMessage.style.display = 'none';
+        }, 2000);
+      });
+    }
   </script>
 </body>
 
